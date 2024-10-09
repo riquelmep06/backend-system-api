@@ -18,7 +18,7 @@ export class UsersController {
     return await this.usersServices.createUser(createUserDto);
   }
 
-  @Patch('update-user:id') // PATCH /users/:id
+  @Patch('update-user/:id') // PATCH /users/:id
   async updateUser(
     @Param('id', ParseIntPipe) id: number, // ID passado pela URL
     @Body() updateUserDto: UpdateUserDto // Dados de atualização passados no corpo
@@ -26,7 +26,7 @@ export class UsersController {
     return await this.usersServices.updateUser(id, updateUserDto);
 }
 
-  @Delete('delete-user:id') // DELETE /users/:id
+  @Delete('delete-user/:id') // DELETE /users/:id
   async deleteUser(
     @Param('id', ParseIntPipe) id: number
   ): Promise<User> {

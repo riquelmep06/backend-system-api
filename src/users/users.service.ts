@@ -14,6 +14,7 @@ export class UsersServices {
     return await this.prisma.users.findMany()
   }
 
+
   async createUser(createUserDto: CreateUserDto): Promise<User> {
 
     const saltRounds = 10; 
@@ -24,6 +25,7 @@ export class UsersServices {
         name: createUserDto.name,
         email: createUserDto.email,
         password: hashedPassword,
+        roles: createUserDto.role
       },
     });
   }
@@ -43,11 +45,11 @@ export class UsersServices {
       data: {
         name: updateUserDto.name,
         email: updateUserDto.email,
-        password: password || updateUserDto.password 
+        password: password || updateUserDto.password,
+        roles:updateUserDto.role
       }, 
     });
   }
-
   async deleteUser(id: number): Promise<User> {
     return this.prisma.users.delete({
       where: { id },
