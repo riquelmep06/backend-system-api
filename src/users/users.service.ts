@@ -1,6 +1,6 @@
 import { PrismaService } from "src/database/prisma.service";
 import { User } from "./interface/user.interface";
-import { Injectable, ParseIntPipe } from "@nestjs/common";
+import { Injectable, ParseIntPipe, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from 'bcrypt';
@@ -58,6 +58,18 @@ export class UsersServices {
   
   async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async findByEmail(email: string) {
+    const existingUser = await this.prisma.users.findUnique({
+      where: { email },
+    });
+    if (!existingUser){
+      throw new UnauthorizedException("Senha ou Email inválido")
+    }
+    return await this.prisma.users.findUnique({
+      where: {email},
+    })
   }
 }
 
