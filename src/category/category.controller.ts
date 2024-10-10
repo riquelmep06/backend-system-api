@@ -30,7 +30,7 @@ export class CategoryController {
     @Delete('delete-category/:id')
     async deleteCategory(
       @Param('id', ParseIntPipe) id: number
-  ): Promise<Category> {
+  ): Promise<{message:string}> {
     return await this.CategoryServices.deleteCategory(id);
 }
 

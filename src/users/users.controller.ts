@@ -4,6 +4,7 @@ import { UsersServices } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { Request } from "@nestjs/common";
 
 @Controller('users/')
 @UseGuards(AuthGuard('jwt'))
@@ -20,19 +21,20 @@ export class UsersController {
     return await this.usersServices.createUser(createUserDto);
   }
 
-  @Patch('update-user/:id') // PATCH /users/:id
+  @Patch('update-user/:id') 
   async updateUser(
-    @Param('id', ParseIntPipe) id: number, // ID passado pela URL
-    @Body() updateUserDto: UpdateUserDto // Dados de atualização passados no corpo
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() updateUserDto: UpdateUserDto,
+    @Request( ) req,
   ): Promise<User> {
-    return await this.usersServices.updateUser(id, updateUserDto);
+    return await this.usersServices.updateUser(id, updateUserDto, req.user.id);
 }
 
-  @Delete('delete-user/:id') // DELETE /users/:id
+  @Delete('delete-user/:id') 
   async deleteUser(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<User> {
-    return await this.usersServices.deleteUser(id);
+    @Param('id', ParseIntPipe) id: number, @Request() req
+  ): Promise<{message:string}> {
+    return await this.usersServices.deleteUser(id, req.user.id);
 }
 }
 

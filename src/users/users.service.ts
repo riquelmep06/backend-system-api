@@ -1,6 +1,6 @@
 import { PrismaService } from "src/database/prisma.service";
 import { User } from "./interface/user.interface";
-import { Injectable, ParseIntPipe, UnauthorizedException } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, ParseIntPipe, UnauthorizedException } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import * as bcrypt from 'bcrypt';
@@ -11,7 +11,14 @@ export class UsersServices {
   constructor(private prisma: PrismaService) {}
 
   async getUser(): Promise<User[]> {
-    return await this.prisma.users.findMany()
+    return await this.prisma.users.findMany({
+      select:{
+        id: true,
+        name: true,
+        email:true,
+        roles: true,
+      }
+    })
   }
 
 
@@ -30,7 +37,14 @@ export class UsersServices {
     });
   }
 
-  async updateUser(id:number, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(id:number, updateUserDto: UpdateUserDto, user_id_request: number): Promise<User> {
+    if (id !== user_id_request){
+      throw new HttpException(
+        'Você não tem acesso, pois nao é esse usuário.',
+        HttpStatus.UNAUTHORIZED,
+
+      )
+    }
 
     let password = updateUserDto.password
     if(password){
@@ -50,16 +64,19 @@ export class UsersServices {
       }, 
     });
   }
-  async deleteUser(id: number): Promise<User> {
-    return this.prisma.users.delete({
+  async deleteUser(id: number, user_id_request: number): Promise<{message: string}> {
+    if (id !== user_id_request){
+      throw new HttpException(
+        'Você não tem acesso, pois nao é esse usuário.',
+        HttpStatus.UNAUTHORIZED,
+
+      )}
+    await this.prisma.users.delete({
       where: { id },
     });
+    return {message: "Usuário deletado!"}
   }
   
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
-  }
-
   async findByEmail(email: string) {
     const existingUser = await this.prisma.users.findUnique({
       where: { email },

@@ -1,6 +1,6 @@
 import { PrismaService } from "src/database/prisma.service";
 import { Answers } from "./interface/answers.interface";
-import { Injectable, ParseIntPipe } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, ParseIntPipe } from "@nestjs/common";
 import { CreateAnswersDto } from "./dto/create-answers.dto";
 import { UpdateAnswersDto } from "./dto/update-answers.dto";
 
@@ -24,17 +24,30 @@ export class AnswersServices {
   }
 
   
-  async updateAnswers(id:number, updateAnswersDto: UpdateAnswersDto): Promise<Answers> {
+  async updateAnswers(id:number, updateAnswersDto: UpdateAnswersDto, user_id_request: number): Promise<Answers> {
+    if (id !== user_id_request){
+      throw new HttpException(
+        'Você não tem acesso, pois essa resposta nao é sua.',
+        HttpStatus.UNAUTHORIZED,
+
+      )}
     return await this.prisma.answers.update({
       where: { id }, 
       data:updateAnswersDto, 
     });
   }
 
-  async deleteAnswers(id: number): Promise<Answers> {
-    return await this.prisma.answers.delete({
+  async deleteAnswers(id: number, user_id_request: number): Promise<{message:string}> {
+    if (id !== user_id_request){
+      throw new HttpException(
+        'Você não tem acesso, pois essa resposta nao é sua.',
+        HttpStatus.UNAUTHORIZED,
+
+      )}
+    await this.prisma.answers.delete({
       where: { id },
     });
+    return {message:"Resposta deletada!"}
   }
 
  

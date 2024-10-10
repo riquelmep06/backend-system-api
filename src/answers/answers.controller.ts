@@ -5,6 +5,7 @@ import { title } from "process";
 import { CreateAnswersDto } from "./dto/create-answers.dto";
 import { UpdateAnswersDto } from "./dto/update-answers.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { Request } from "@nestjs/common";
 
 @Controller('answers/')
 @UseGuards(AuthGuard('jwt'))
@@ -26,16 +27,17 @@ export class AnswersController {
   @Patch('update-answer/:id') 
   async updateAnswers(
     @Param('id', ParseIntPipe) id: number, 
-    @Body() updateAnswersDto: UpdateAnswersDto
+    @Body() updateAnswersDto: UpdateAnswersDto,
+    @Request() req,
   ): Promise<Answers> {
-    return await this.answersServices.updateAnswers(id, updateAnswersDto);
+    return await this.answersServices.updateAnswers(id, updateAnswersDto, req.user.id);
 }
 
   @Delete('delete-answer/:id') 
   async deleteAnswers(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<Answers> {
-    return await this.answersServices.deleteAnswers(id);
+    @Param('id', ParseIntPipe) id: number, @Request() req,
+  ): Promise<{message:string}> {
+    return await this.answersServices.deleteAnswers(id, req.user.id);
 }
 
 

@@ -27,10 +27,11 @@ export class CategoryServices {
     });
   }
 
-  async deleteCategory(id: number): Promise<Category> {
-    return this.prisma.category.delete({
+  async deleteCategory(id: number): Promise<{message:string}> {
+    await this.prisma.category.delete({
       where: { id: id },
     });
+    return {message: "Categoria deletada!"}
   }
 
 }
