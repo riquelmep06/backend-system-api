@@ -54,7 +54,7 @@ export class AuthService {
 
         const testPassword = compareSync(password, user.password);
 
-        if(testPassword) return null;
+        if(!testPassword) return null;
 
         return user;
         }
