@@ -5,6 +5,7 @@ import { compareSync } from 'bcrypt';
 import { User } from 'src/users/interface/user.interface';
 
 import { access } from 'fs';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,20 @@ export class AuthService {
       ) {}
 
       async login(user) {
+        const payload = { email: user.email, sub: user.id };
+       
+        const accessToken = this.jwtService.sign(payload);
+        const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d', });
+          
+          return{
+            access_token: accessToken,
+            refreshToken: refreshToken,
+          }
+       
+      }
+      async register(createUserDto: CreateUserDto) {
+        
+        const user = await this.usersServices.createUser(createUserDto)
         const payload = { email: user.email, sub: user.id };
        
         const accessToken = this.jwtService.sign(payload);

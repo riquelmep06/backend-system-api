@@ -19,9 +19,8 @@ export class AnswersController {
 
   
   @Post('create-answer')
-  async createAnswers(@Body() createAnswersDto: CreateAnswersDto): Promise<Answers> {
-    return await this.answersServices.createAnswers(createAnswersDto);
-
+  async createAnswers(@Body() createAnswersDto: CreateAnswersDto, @Request() req): Promise<Answers> {
+    return await this.answersServices.createAnswers(createAnswersDto, req.user.sub);
   }
 
   @Patch('update-answer/:id') 
@@ -30,14 +29,14 @@ export class AnswersController {
     @Body() updateAnswersDto: UpdateAnswersDto,
     @Request() req,
   ): Promise<Answers> {
-    return await this.answersServices.updateAnswers(id, updateAnswersDto, req.user.id);
+    return await this.answersServices.updateAnswers(id, updateAnswersDto, req.user.sub);
 }
 
   @Delete('delete-answer/:id') 
   async deleteAnswers(
     @Param('id', ParseIntPipe) id: number, @Request() req,
   ): Promise<{message:string}> {
-    return await this.answersServices.deleteAnswers(id, req.user.id);
+    return await this.answersServices.deleteAnswers(id, req.user.sub);
 }
 
 

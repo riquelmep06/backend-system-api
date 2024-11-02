@@ -7,10 +7,6 @@ export class CreateQuestionsDto {
     @IsNotEmpty()
     id_category: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    id_users: number;
-
     @IsString()
     @IsNotEmpty()
     @Length(5,45)

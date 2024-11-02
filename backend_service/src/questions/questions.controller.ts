@@ -19,11 +19,8 @@ export class QuestionsController {
 
   
   @Post('create-question')
-  async createQuestions(@Body() createQuestionsDto: CreateQuestionsDto): Promise<Questions> {
-    return await this.questionsServices.createQuestions(createQuestionsDto);
-
-    
-
+  async createQuestions(@Body() createQuestionsDto: CreateQuestionsDto, @Request() req): Promise<Questions> {
+    return await this.questionsServices.createQuestions(createQuestionsDto,req.user.sub);
   }
 
   @Patch('update-question/:id') 
@@ -32,7 +29,7 @@ export class QuestionsController {
     @Body() updateQuestionsDto: UpdateQuestionsDto,
     @Request() req,
   ): Promise<Questions> {
-    return await this.questionsServices.updateQuestions(id, updateQuestionsDto, req.user.id);
+    return await this.questionsServices.updateQuestions(id, updateQuestionsDto, req.user.sub);
 }
 
   @Delete('delete-question/:id') 
@@ -40,7 +37,7 @@ export class QuestionsController {
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
   ): Promise<{message:string}> {
-    return await this.questionsServices.deleteQuestions(id, req.user.id);
+    return await this.questionsServices.deleteQuestions(id, req.user.sub);
 }
 
 

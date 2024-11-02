@@ -13,10 +13,10 @@ export class QuestionsServices {
     return await this.prisma.questions.findMany()
   }
   
-  async createQuestions(CreateQuestionsDto: CreateQuestionsDto): Promise<Questions> {
+  async createQuestions(CreateQuestionsDto: CreateQuestionsDto, user_id_request: number): Promise<Questions> {
     return await this.prisma.questions.create({
       data: {
-        id_users: CreateQuestionsDto.id_users,
+        id_users: user_id_request,
         id_category: CreateQuestionsDto.id_category,
         description: CreateQuestionsDto.description,
         title: CreateQuestionsDto.title,

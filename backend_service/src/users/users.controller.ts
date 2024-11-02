@@ -7,11 +7,12 @@ import { AuthGuard } from "@nestjs/passport";
 import { Request } from "@nestjs/common";
 
 @Controller('users/')
-@UseGuards(AuthGuard('jwt'))
+
 export class UsersController {
   constructor(private readonly usersServices: UsersServices) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   async getUsers(): Promise<User[]> {
     return await this.usersServices.getUser();
   }
@@ -21,20 +22,22 @@ export class UsersController {
     return await this.usersServices.createUser(createUserDto);
   }
 
-  @Patch('update-user/:id') 
+  @Patch('update-user/:id')
+  @UseGuards(AuthGuard('jwt'))
   async updateUser(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateUserDto: UpdateUserDto,
     @Request( ) req,
   ): Promise<User> {
-    return await this.usersServices.updateUser(id, updateUserDto, req.user.id);
+    return await this.usersServices.updateUser(id, updateUserDto, req.user.sub);
 }
 
-  @Delete('delete-user/:id') 
+  @Delete('delete-user/:id')
+  @UseGuards(AuthGuard('jwt'))
   async deleteUser(
     @Param('id', ParseIntPipe) id: number, @Request() req
   ): Promise<{message:string}> {
-    return await this.usersServices.deleteUser(id, req.user.id);
+    return await this.usersServices.deleteUser(id, req.user.sub);
 }
 }
 
